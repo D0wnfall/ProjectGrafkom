@@ -1478,6 +1478,9 @@ function main() {
     var time_prev = 0;
     let walkingPhase = 0;
     var kaki_z = 0;
+    var range = 0;
+    let stepLength = 0;
+    var gerakBadan = 0;
     var animate = function (time) {
         GL.viewport(0, 0, CANVAS.width, CANVAS.height);
         GL.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT);
@@ -1499,8 +1502,18 @@ function main() {
         if (keysPressed.d) {
             LIBS.translateX(VIEW_MATRIX, cameraSpeed);
         }
+        range += 1;
 
-        let stepLength = 0.1 * Math.sin(walkingPhase * 2 * Math.PI);
+        if (range >= 50) {
+            stepLength = 0;
+            kaki_z = 1;
+            gerakBadan = 0
+        } else {
+            kaki_z += 0.025;
+            gerakBadan = 0.025;
+            stepLength = 0.1 * Math.sin(walkingPhase * 2 * Math.PI);
+        }
+       
         let kaki_kiri_MODEL_MATRIX = LIBS.get_I4();
         let kaki_kanan_MODEL_MATRIX = LIBS.get_I4();
         let kaki_kiri_M_MODEL_MATRIX = LIBS.get_I4();
@@ -1518,10 +1531,9 @@ function main() {
         LIBS.rotateX(kaki_kanan_M_MODEL_MATRIX, -stepLength);
         LIBS.translateZ(kaki_kanan_M_MODEL_MATRIX, -stepLength);
 
-        LIBS.translateZ(MODEL_MATRIX, 0.025);
-        LIBS.translateZ(MODEL_MATRIX2, 0.025);
+        LIBS.translateZ(MODEL_MATRIX, gerakBadan);
+        LIBS.translateZ(MODEL_MATRIX2, gerakBadan);
 
-        kaki_z += 0.025;
         LIBS.translateZ(kaki_kiri_MODEL_MATRIX, kaki_z);
         LIBS.translateZ(kaki_kanan_MODEL_MATRIX, kaki_z);
 
