@@ -1367,7 +1367,7 @@ function main() {
         var dt = time - time_prev;
         time_prev = time;
 
-        walkingPhase = (time / 1000) % 1;
+        walkingPhase = (time / 10000) % 1;
 
         if (keysPressed.w) {
             LIBS.translateZ(VIEW_MATRIX, -cameraSpeed);
@@ -1640,10 +1640,6 @@ function main() {
         GL.uniformMatrix4fv(_VMatrix, false, VIEW_MATRIX);
         GL.uniformMatrix4fv(_MMatrix, false, kaki_kiri_M_MODEL_MATRIX);
         GL.drawElements(GL.TRIANGLES, kaki_kiri.faces.length, GL.UNSIGNED_SHORT, 0);
-
-
-
-
 
         GL.flush();
 
