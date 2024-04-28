@@ -1150,7 +1150,7 @@ function main() {
     GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(badanMetaknight.faces), GL.STATIC_DRAW);
 
     // Mata kanan: x, y, z, radius, segments, ovalScaleX, ovalScaleY, ovalScaleZ
-    var mata_Kanan = generateMataM(3.9, 0.1, 1.45, 0.175, 100, 0.7, 1.8, 0.7);
+    var mata_Kanan = generateMataM(3.8, 0.1, 1.4, 0.175, 100, 0.7, 1.8, 0.7);
     var TUBE_VERTEX13 = GL.createBuffer();
     GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX13);
     GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(mata_Kanan.vertices), GL.STATIC_DRAW);
@@ -1162,7 +1162,7 @@ function main() {
     GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(mata_Kanan.faces), GL.STATIC_DRAW);
 
     // Mata kiri: x, y, z, radius, segments, ovalScaleX, ovalScaleY, ovalScaleZ
-    var mata_Kiri = generateMataM(3.1, 0.1, 1.45, 0.175, 100, 0.7, 1.8, 0.7);
+    var mata_Kiri = generateMataM(3.2, 0.1, 1.4, 0.175, 100, 0.7, 1.8, 0.7);
     var TUBE_VERTEX14 = GL.createBuffer();
     GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX14);
     GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(mata_Kiri.vertices), GL.STATIC_DRAW);
@@ -1235,7 +1235,7 @@ function main() {
     GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(pedang.faces), GL.STATIC_DRAW);
     
     // kaki 
-    var kaki_kanan = generateKakiM(4.5, -0.95, 0.8, 1, 100, 0.5, 0.2, 0.7); // badan: x, y, z, radius, segments, ScaleX, ScaleY, ScaleZ
+    var kaki_kanan = generateKakiM(4, -0.95, 0.8, 1, 100, 0.5, 0.2, 0.7); // badan: x, y, z, radius, segments, ScaleX, ScaleY, ScaleZ
     var TUBE_VERTEX20 = GL.createBuffer();
     GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX20);
     GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(kaki_kanan.vertices), GL.STATIC_DRAW);
@@ -1358,12 +1358,16 @@ function main() {
     var cameraSpeed = 0.1; // Kecepatan pergerakan kamera
 
     var time_prev = 0;
+    let walkingPhase = 0;
+    var kaki_z = 0;
     var animate = function (time) {
         GL.viewport(0, 0, CANVAS.width, CANVAS.height);
         GL.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT);
 
         var dt = time - time_prev;
         time_prev = time;
+
+        walkingPhase = (time / 1000) % 1;
 
         if (keysPressed.w) {
             LIBS.translateZ(VIEW_MATRIX, -cameraSpeed);
@@ -1377,6 +1381,34 @@ function main() {
         if (keysPressed.d) {
             LIBS.translateX(VIEW_MATRIX, cameraSpeed);
         }
+
+        let stepLength = 0.1 * Math.sin(walkingPhase * 2 * Math.PI);
+        let kaki_kiri_MODEL_MATRIX = LIBS.get_I4();
+        let kaki_kanan_MODEL_MATRIX = LIBS.get_I4();
+        let kaki_kiri_M_MODEL_MATRIX = LIBS.get_I4();
+        let kaki_kanan_M_MODEL_MATRIX = LIBS.get_I4();
+        
+        LIBS.translateZ(kaki_kiri_MODEL_MATRIX, stepLength);
+        LIBS.rotateX(kaki_kiri_MODEL_MATRIX, stepLength);
+
+        LIBS.rotateX(kaki_kanan_MODEL_MATRIX, -stepLength);
+        LIBS.translateZ(kaki_kanan_MODEL_MATRIX, -stepLength);
+
+        LIBS.translateZ(kaki_kiri_M_MODEL_MATRIX, stepLength);
+        LIBS.rotateX(kaki_kiri_M_MODEL_MATRIX, stepLength);
+
+        LIBS.rotateX(kaki_kanan_M_MODEL_MATRIX, -stepLength);
+        LIBS.translateZ(kaki_kanan_M_MODEL_MATRIX, -stepLength);
+
+        LIBS.translateZ(MODEL_MATRIX, 0.1);
+        LIBS.translateZ(MODEL_MATRIX2, 0.1);
+
+        kaki_z += 0.1;
+        LIBS.translateZ(kaki_kiri_MODEL_MATRIX, kaki_z);
+        LIBS.translateZ(kaki_kanan_MODEL_MATRIX, kaki_z);
+
+        LIBS.translateZ(kaki_kiri_M_MODEL_MATRIX, kaki_z);
+        LIBS.translateZ(kaki_kanan_M_MODEL_MATRIX, kaki_z);
 
         // Badan
         GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX1);
@@ -1397,7 +1429,7 @@ function main() {
         GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES2);
         GL.uniformMatrix4fv(_PMatrix, false, PROJECTION_MATRIX);
         GL.uniformMatrix4fv(_VMatrix, false, VIEW_MATRIX);
-        GL.uniformMatrix4fv(_MMatrix, false, MODEL_MATRIX);
+        GL.uniformMatrix4fv(_MMatrix, false, kaki_kiri_MODEL_MATRIX);
         GL.drawElements(GL.TRIANGLES, kaki.faces.length, GL.UNSIGNED_SHORT, 0);
 
         // Kaki2
@@ -1408,7 +1440,7 @@ function main() {
         GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES3);
         GL.uniformMatrix4fv(_PMatrix, false, PROJECTION_MATRIX);
         GL.uniformMatrix4fv(_VMatrix, false, VIEW_MATRIX);
-        GL.uniformMatrix4fv(_MMatrix, false, MODEL_MATRIX);
+        GL.uniformMatrix4fv(_MMatrix, false, kaki_kanan_MODEL_MATRIX);
         GL.drawElements(GL.TRIANGLES, kaki2.faces.length, GL.UNSIGNED_SHORT, 0);
 
         // tangan
@@ -1595,7 +1627,7 @@ function main() {
         GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES20);
         GL.uniformMatrix4fv(_PMatrix, false, PROJECTION_MATRIX);
         GL.uniformMatrix4fv(_VMatrix, false, VIEW_MATRIX);
-        GL.uniformMatrix4fv(_MMatrix, false, MODEL_MATRIX);
+        GL.uniformMatrix4fv(_MMatrix, false, kaki_kanan_M_MODEL_MATRIX);
         GL.drawElements(GL.TRIANGLES, kaki_kanan.faces.length, GL.UNSIGNED_SHORT, 0);
 
         //kakiM
@@ -1606,7 +1638,7 @@ function main() {
         GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES21);
         GL.uniformMatrix4fv(_PMatrix, false, PROJECTION_MATRIX);
         GL.uniformMatrix4fv(_VMatrix, false, VIEW_MATRIX);
-        GL.uniformMatrix4fv(_MMatrix, false, MODEL_MATRIX);
+        GL.uniformMatrix4fv(_MMatrix, false, kaki_kiri_M_MODEL_MATRIX);
         GL.drawElements(GL.TRIANGLES, kaki_kiri.faces.length, GL.UNSIGNED_SHORT, 0);
 
 

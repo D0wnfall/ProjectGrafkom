@@ -886,7 +886,6 @@ function main() {
         GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES2);
         GL.uniformMatrix4fv(_PMatrix, false, PROJECTION_MATRIX);
         GL.uniformMatrix4fv(_VMatrix, false, VIEW_MATRIX);
-        
         GL.uniformMatrix4fv(_MMatrix, false, kaki_kiri_MODEL_MATRIX);
         GL.drawElements(GL.TRIANGLES, kaki.faces.length, GL.UNSIGNED_SHORT, 0);
 
@@ -898,7 +897,6 @@ function main() {
         GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES3);
         GL.uniformMatrix4fv(_PMatrix, false, PROJECTION_MATRIX);
         GL.uniformMatrix4fv(_VMatrix, false, VIEW_MATRIX);
-       
         GL.uniformMatrix4fv(_MMatrix, false, kaki_kanan_MODEL_MATRIX);
         GL.drawElements(GL.TRIANGLES, kaki2.faces.length, GL.UNSIGNED_SHORT, 0);
 
