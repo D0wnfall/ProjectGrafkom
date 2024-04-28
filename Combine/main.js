@@ -9,7 +9,7 @@ var keysPressed = {
     d: false
 };
 
-//kirby
+//--------------------------------------kirby------------------------------------
 
 // Sphere
 function generateBadan(x, y, z, radius, segments, ScaleX, ScaleY, ScaleZ) {
@@ -473,20 +473,6 @@ function generateTongkat(x, y, z, radius, height, segments, ScaleX, ScaleY, Scal
     return { vertices: vertices, colors: colors, faces: faces };
 }
 
-
-function updateViewMatrix() {
-    var sensitivity = 0.001; // Adjust sensitivity here
-    var dx = mouseX - prevMouseX;
-    var dy = mouseY - prevMouseY;
-
-    // Rotate the view matrix based on mouse movement
-    LIBS.rotateY(VIEW_MATRIX, -dx);
-    LIBS.rotateX(VIEW_MATRIX, -dy);
-
-    prevMouseX = mouseX;
-    prevMouseY = mouseY;
-}
-
 //Metaknight
 
 // Bagian Kepala Dan Wajah
@@ -929,6 +915,113 @@ function generateKakiM(x, y, z, radius, segments, ovalScaleX, ovalScaleY, ovalSc
     return { vertices: vertices, colors: colors, faces: faces };
 }
 
+//Pohon
+function generatePohon(x, y, z, radius, segments, ScaleX, ScaleY, ScaleZ) {
+    var vertices = [];
+    var colors = [];
+
+    var angleIncrement = (2 * Math.PI) / segments;
+
+    var rainbowColors = [
+        [53 / 255, 107 / 255, 22 / 255]
+    ];
+
+    for (var i = 0; i <= segments; i++) {
+        var latAngle = Math.PI * (-0.5 + (i / segments));
+        var vLat = latAngle;
+
+        for (var j = 0; j <= segments; j++) {
+            var lonAngle = 2 * Math.PI * Math.max(0, (j / segments));
+            var sinLon = Math.sin(lonAngle);
+            var cosLon = Math.cos(lonAngle);
+
+            var xCoord = cosLon * vLat * ScaleX;
+            var yCoord = sinLon * vLat * ScaleY;
+            var zCoord = Math.pow(vLat, 2) * ScaleZ;
+
+            var vertexX = x + radius * xCoord;
+            var vertexY = y + radius * yCoord;
+            var vertexZ = z + radius * zCoord;
+
+            vertices.push(vertexX, vertexY, vertexZ);
+
+            var colorIndex = j % rainbowColors.length;
+            colors = colors.concat(rainbowColors[colorIndex]);
+        }
+    }
+
+    var faces = [];
+    for (var i = 0; i < segments; i++) {
+        for (var j = 0; j < segments; j++) {
+            var index = i * (segments + 1) + j;
+            var nextIndex = index + segments + 1;
+
+            faces.push(index, nextIndex, index + 1);
+            faces.push(nextIndex, nextIndex + 1, index + 1);
+        }
+    }
+    return { vertices: vertices, colors: colors, faces: faces };
+}
+
+function generateLog(x, y, z, radius, height, segments, ScaleX, ScaleY, ScaleZ) {
+    var vertices = [];
+    var colors = [];
+
+    var rainbowColors = [
+        [135 / 255, 62 / 255, 35 / 255]
+    ];
+
+    for (var i = 0; i <= segments; i++) {
+        var angle = 2 * Math.PI * (i / segments);
+        var sinAngle = Math.sin(angle);
+        var cosAngle = Math.cos(angle);
+
+        for (var j = 0; j <= segments; j++) {
+            var heightFraction = j / segments;
+            var xCoord = radius * cosAngle * ScaleX;
+            var yCoord = radius * sinAngle * ScaleY;
+            var zCoord = height * heightFraction - height / 2 * ScaleZ;
+
+            var vertexX = x + xCoord;
+            var vertexY = y + yCoord;
+            var vertexZ = z + zCoord;
+
+            vertices.push(vertexX, vertexY, vertexZ);
+
+            var colorIndex = j % rainbowColors.length;
+            colors = colors.concat(rainbowColors[colorIndex]);
+        }
+    }
+
+    var faces = [];
+    for (var i = 0; i < segments; i++) {
+        for (var j = 0; j < segments; j++) {
+            var index = i * (segments + 1) + j;
+            var nextIndex = index + segments + 1;
+
+            faces.push(index, nextIndex, index + 1);
+            faces.push(nextIndex, nextIndex + 1, index + 1);
+        }
+    }
+    return { vertices: vertices, colors: colors, faces: faces };
+}
+
+
+
+
+
+function updateViewMatrix() {
+    var sensitivity = 0.001; // Adjust sensitivity here
+    var dx = mouseX - prevMouseX;
+    var dy = mouseY - prevMouseY;
+
+    // Rotate the view matrix based on mouse movement
+    LIBS.rotateY(VIEW_MATRIX, -dx);
+    LIBS.rotateX(VIEW_MATRIX, -dy);
+
+    prevMouseX = mouseX;
+    prevMouseY = mouseY;
+}
 
 function main() {
     var CANVAS = document.getElementById("mycanvas");
@@ -1086,7 +1179,6 @@ function main() {
     GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES7);
     GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(mata2.faces), GL.STATIC_DRAW);
 
-
     //topi
     var topi = generateTopi(0, 0.5, -1.2, 0.3, 100, 2, 2, 1);
     var TUBE_VERTEX8 = GL.createBuffer();
@@ -1150,7 +1242,7 @@ function main() {
     GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(badanMetaknight.faces), GL.STATIC_DRAW);
 
     // Mata kanan: x, y, z, radius, segments, ovalScaleX, ovalScaleY, ovalScaleZ
-    var mata_Kanan = generateMataM(3.8, 0.1, 1.4, 0.175, 100, 0.7, 1.8, 0.7);
+    var mata_Kanan = generateMataM(3.9, 0.1, 1.45, 0.175, 100, 0.7, 1.8, 0.7);
     var TUBE_VERTEX13 = GL.createBuffer();
     GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX13);
     GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(mata_Kanan.vertices), GL.STATIC_DRAW);
@@ -1162,7 +1254,7 @@ function main() {
     GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(mata_Kanan.faces), GL.STATIC_DRAW);
 
     // Mata kiri: x, y, z, radius, segments, ovalScaleX, ovalScaleY, ovalScaleZ
-    var mata_Kiri = generateMataM(3.2, 0.1, 1.4, 0.175, 100, 0.7, 1.8, 0.7);
+    var mata_Kiri = generateMataM(3.1, 0.1, 1.45, 0.175, 100, 0.7, 1.8, 0.7);
     var TUBE_VERTEX14 = GL.createBuffer();
     GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX14);
     GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(mata_Kiri.vertices), GL.STATIC_DRAW);
@@ -1235,7 +1327,7 @@ function main() {
     GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(pedang.faces), GL.STATIC_DRAW);
     
     // kaki 
-    var kaki_kanan = generateKakiM(4, -0.95, 0.8, 1, 100, 0.5, 0.2, 0.7); // badan: x, y, z, radius, segments, ScaleX, ScaleY, ScaleZ
+    var kaki_kanan = generateKakiM(4.10, -0.95, 0.8, 1, 100, 0.5, 0.2, 0.7); // badan: x, y, z, radius, segments, ScaleX, ScaleY, ScaleZ
     var TUBE_VERTEX20 = GL.createBuffer();
     GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX20);
     GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(kaki_kanan.vertices), GL.STATIC_DRAW);
@@ -1247,7 +1339,7 @@ function main() {
     GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(kaki_kanan.faces), GL.STATIC_DRAW);
 
     // kaki 
-    var kaki_kiri = generateKakiM(3.0, -0.95, 0.8, 1, 100, 0.5, 0.2, 0.7); // badan: x, y, z, radius, segments, ScaleX, ScaleY, ScaleZ
+    var kaki_kiri = generateKakiM(2.90, -0.95, 0.8, 1, 100, 0.5, 0.2, 0.7); // badan: x, y, z, radius, segments, ScaleX, ScaleY, ScaleZ
     var TUBE_VERTEX21 = GL.createBuffer();
     GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX21);
     GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(kaki_kiri.vertices), GL.STATIC_DRAW);
@@ -1258,13 +1350,38 @@ function main() {
     GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES21);
     GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(kaki_kiri.faces), GL.STATIC_DRAW);
 
+    //---------------------------------ENVIROMENT-----------------
+    //Pohon 
+    var pohon = generatePohon(-3, -4, -5, 1, 100, 1, 1, 2); // badan: x, y, z, radius, segments, ScaleX, ScaleY, ScaleZ
+    var TUBE_VERTEX22 = GL.createBuffer();
+    GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX22);
+    GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(pohon.vertices), GL.STATIC_DRAW);
+    var TUBE_COLORS22 = GL.createBuffer();
+    GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_COLORS22);
+    GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(pohon.colors), GL.STATIC_DRAW);
+    var TUBE_FACES22 = GL.createBuffer();
+    GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES22);
+    GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(pohon.faces), GL.STATIC_DRAW);
+
+    //log
+    var log = generateLog(-3, -4, -5, 0.35, 3, 100, 1, 1, -2); // badan: x, y, z, radius, segments, ScaleX, ScaleY, ScaleZ
+    var TUBE_VERTEX23 = GL.createBuffer();
+    GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX23);
+    GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(log.vertices), GL.STATIC_DRAW);
+    var TUBE_COLORS23 = GL.createBuffer();
+    GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_COLORS23);
+    GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(log.colors), GL.STATIC_DRAW);
+    var TUBE_FACES23 = GL.createBuffer();
+    GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES23);
+    GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(log.faces), GL.STATIC_DRAW);
+
 
     //matrix
     var PROJECTION_MATRIX = LIBS.get_projection(40, CANVAS.width / CANVAS.height, 1, 100);
     var VIEW_MATRIX = LIBS.get_I4();
     var MODEL_MATRIX = LIBS.get_I4();
     var MODEL_MATRIX2 = LIBS.get_I4();
-
+    var MODEL_MATRIX3 = LIBS.get_I4();
 
 
     // Event listener untuk mouse movement
@@ -1351,6 +1468,7 @@ function main() {
 
 
     LIBS.rotateX(MODEL_MATRIX2, Math.PI / 2);
+    LIBS.rotateX(MODEL_MATRIX3, Math.PI / 2);
 
     GL.enable(GL.DEPTH_TEST);
     GL.depthFunc(GL.LEQUAL);
@@ -1358,16 +1476,12 @@ function main() {
     var cameraSpeed = 0.1; // Kecepatan pergerakan kamera
 
     var time_prev = 0;
-    let walkingPhase = 0;
-    var kaki_z = 0;
     var animate = function (time) {
         GL.viewport(0, 0, CANVAS.width, CANVAS.height);
         GL.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT);
 
         var dt = time - time_prev;
         time_prev = time;
-
-        walkingPhase = (time / 10000) % 1;
 
         if (keysPressed.w) {
             LIBS.translateZ(VIEW_MATRIX, -cameraSpeed);
@@ -1381,34 +1495,6 @@ function main() {
         if (keysPressed.d) {
             LIBS.translateX(VIEW_MATRIX, cameraSpeed);
         }
-
-        let stepLength = 0.1 * Math.sin(walkingPhase * 2 * Math.PI);
-        let kaki_kiri_MODEL_MATRIX = LIBS.get_I4();
-        let kaki_kanan_MODEL_MATRIX = LIBS.get_I4();
-        let kaki_kiri_M_MODEL_MATRIX = LIBS.get_I4();
-        let kaki_kanan_M_MODEL_MATRIX = LIBS.get_I4();
-        
-        LIBS.translateZ(kaki_kiri_MODEL_MATRIX, stepLength);
-        LIBS.rotateX(kaki_kiri_MODEL_MATRIX, stepLength);
-
-        LIBS.rotateX(kaki_kanan_MODEL_MATRIX, -stepLength);
-        LIBS.translateZ(kaki_kanan_MODEL_MATRIX, -stepLength);
-
-        LIBS.translateZ(kaki_kiri_M_MODEL_MATRIX, stepLength);
-        LIBS.rotateX(kaki_kiri_M_MODEL_MATRIX, stepLength);
-
-        LIBS.rotateX(kaki_kanan_M_MODEL_MATRIX, -stepLength);
-        LIBS.translateZ(kaki_kanan_M_MODEL_MATRIX, -stepLength);
-
-        LIBS.translateZ(MODEL_MATRIX, 0.1);
-        LIBS.translateZ(MODEL_MATRIX2, 0.1);
-
-        kaki_z += 0.1;
-        LIBS.translateZ(kaki_kiri_MODEL_MATRIX, kaki_z);
-        LIBS.translateZ(kaki_kanan_MODEL_MATRIX, kaki_z);
-
-        LIBS.translateZ(kaki_kiri_M_MODEL_MATRIX, kaki_z);
-        LIBS.translateZ(kaki_kanan_M_MODEL_MATRIX, kaki_z);
 
         // Badan
         GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX1);
@@ -1429,7 +1515,7 @@ function main() {
         GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES2);
         GL.uniformMatrix4fv(_PMatrix, false, PROJECTION_MATRIX);
         GL.uniformMatrix4fv(_VMatrix, false, VIEW_MATRIX);
-        GL.uniformMatrix4fv(_MMatrix, false, kaki_kiri_MODEL_MATRIX);
+        GL.uniformMatrix4fv(_MMatrix, false, MODEL_MATRIX);
         GL.drawElements(GL.TRIANGLES, kaki.faces.length, GL.UNSIGNED_SHORT, 0);
 
         // Kaki2
@@ -1440,7 +1526,7 @@ function main() {
         GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES3);
         GL.uniformMatrix4fv(_PMatrix, false, PROJECTION_MATRIX);
         GL.uniformMatrix4fv(_VMatrix, false, VIEW_MATRIX);
-        GL.uniformMatrix4fv(_MMatrix, false, kaki_kanan_MODEL_MATRIX);
+        GL.uniformMatrix4fv(_MMatrix, false, MODEL_MATRIX);
         GL.drawElements(GL.TRIANGLES, kaki2.faces.length, GL.UNSIGNED_SHORT, 0);
 
         // tangan
@@ -1627,7 +1713,7 @@ function main() {
         GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES20);
         GL.uniformMatrix4fv(_PMatrix, false, PROJECTION_MATRIX);
         GL.uniformMatrix4fv(_VMatrix, false, VIEW_MATRIX);
-        GL.uniformMatrix4fv(_MMatrix, false, kaki_kanan_M_MODEL_MATRIX);
+        GL.uniformMatrix4fv(_MMatrix, false, MODEL_MATRIX);
         GL.drawElements(GL.TRIANGLES, kaki_kanan.faces.length, GL.UNSIGNED_SHORT, 0);
 
         //kakiM
@@ -1638,9 +1724,35 @@ function main() {
         GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES21);
         GL.uniformMatrix4fv(_PMatrix, false, PROJECTION_MATRIX);
         GL.uniformMatrix4fv(_VMatrix, false, VIEW_MATRIX);
-        GL.uniformMatrix4fv(_MMatrix, false, kaki_kiri_M_MODEL_MATRIX);
+        GL.uniformMatrix4fv(_MMatrix, false, MODEL_MATRIX);
         GL.drawElements(GL.TRIANGLES, kaki_kiri.faces.length, GL.UNSIGNED_SHORT, 0);
 
+        //enviroment
+        //pohon
+        GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX22);
+        GL.vertexAttribPointer(_position, 3, GL.FLOAT, false, 0, 0);
+        GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_COLORS22);
+        GL.vertexAttribPointer(_color, 3, GL.FLOAT, false, 0, 0);
+        GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES22);
+        GL.uniformMatrix4fv(_PMatrix, false, PROJECTION_MATRIX);
+        GL.uniformMatrix4fv(_VMatrix, false, VIEW_MATRIX);
+        GL.uniformMatrix4fv(_MMatrix, false, MODEL_MATRIX3);
+        GL.drawElements(GL.TRIANGLES, pohon.faces.length, GL.UNSIGNED_SHORT, 0);
+
+        //log
+        GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX23);
+        GL.vertexAttribPointer(_position, 3, GL.FLOAT, false, 0, 0);
+        GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_COLORS23);
+        GL.vertexAttribPointer(_color, 3, GL.FLOAT, false, 0, 0);
+        GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES23);
+        GL.uniformMatrix4fv(_PMatrix, false, PROJECTION_MATRIX);
+        GL.uniformMatrix4fv(_VMatrix, false, VIEW_MATRIX);
+        GL.uniformMatrix4fv(_MMatrix, false, MODEL_MATRIX3);
+        GL.drawElements(GL.TRIANGLES, log.faces.length, GL.UNSIGNED_SHORT, 0);
+
+   
+
+        
         GL.flush();
 
         window.requestAnimationFrame(animate);
