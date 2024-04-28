@@ -9,6 +9,218 @@ var keysPressed = {
     d: false
 };
 
+function generateCube(x, y, z, size) {
+    var vertices = [
+        // Front face
+        x - size, y - size, z + size,
+        x + size, y - size, z + size,
+        x + size, y + size, z + size,
+        x - size, y + size, z + size,
+
+        // Back face
+        x - size, y - size, z - size,
+        x - size, y + size, z - size,
+        x + size, y + size, z - size,
+        x + size, y - size, z - size,
+
+        // Top face
+        x - size, y + size, z - size,
+        x - size, y + size, z + size,
+        x + size, y + size, z + size,
+        x + size, y + size, z - size,
+
+        // Bottom face
+        x - size, y - size, z - size,
+        x + size, y - size, z - size,
+        x + size, y - size, z + size,
+        x - size, y - size, z + size,
+
+        // Right face
+        x + size, y - size, z - size,
+        x + size, y + size, z - size,
+        x + size, y + size, z + size,
+        x + size, y - size, z + size,
+
+        // Left face
+        x - size, y - size, z - size,
+        x - size, y - size, z + size,
+        x - size, y + size, z + size,
+        x - size, y + size, z - size
+    ];
+
+    var colors = [
+        // Front face (blue)
+        1.0, 1.0, 0.0,
+        1.0, 1.0, 0.0,
+        1.0, 1.0, 0.0,
+        1.0, 1.0, 0.0,
+
+        // Back face (green)
+        1.0, 1.0, 0.0,
+        1.0, 1.0, 0.0,
+        1.0, 1.0, 0.0,
+        1.0, 1.0, 0.0,
+
+        // Top face (red)
+        1.0, 1.0, 0.0,
+        1.0, 1.0, 0.0,
+        1.0, 1.0, 0.0,
+        1.0, 1.0, 0.0,
+
+        // Bottom face (yellow)
+        1.0, 1.0, 0.0,
+        1.0, 1.0, 0.0,
+        1.0, 1.0, 0.0,
+        1.0, 1.0, 0.0,
+
+        // Right face (cyan)
+        1.0, 1.0, 0.0,
+        1.0, 1.0, 0.0,
+        1.0, 1.0, 0.0,
+        1.0, 1.0, 0.0,
+
+        // Left face (magenta)
+        1.0, 1.0, 0.0,
+        1.0, 1.0, 0.0,
+        1.0, 1.0, 0.0,
+        1.0, 1.0, 0.0,
+    ];
+
+    var faces = [
+        // Front face
+        0, 1, 2,
+        0, 2, 3,
+
+        // Back face
+        4, 5, 6,
+        4, 6, 7,
+
+        // Top face
+        8, 9, 10,
+        8, 10, 11,
+
+        // Bottom face
+        12, 13, 14,
+        12, 14, 15,
+
+        // Right face
+        16, 17, 18,
+        16, 18, 19,
+
+        // Left face
+        20, 21, 22,
+        20, 22, 23
+    ];
+
+    return { vertices: vertices, colors: colors, faces: faces };
+}
+
+function generatePintu(x, y, z, size) {
+    var vertices = [
+        // Front face
+        x - size, y - size, z + size,
+        x + size, y - size, z + size,
+        x + size, y + size, z + size,
+        x - size, y + size, z + size,
+
+        // Back face
+        x - size, y - size, z - size,
+        x - size, y + size, z - size,
+        x + size, y + size, z - size,
+        x + size, y - size, z - size,
+
+        // Top face
+        x - size, y + size, z - size,
+        x - size, y + size, z + size,
+        x + size, y + size, z + size,
+        x + size, y + size, z - size,
+
+        // Bottom face
+        x - size, y - size, z - size,
+        x + size, y - size, z - size,
+        x + size, y - size, z + size,
+        x - size, y - size, z + size,
+
+        // Right face
+        x + size, y - size, z - size,
+        x + size, y + size, z - size,
+        x + size, y + size, z + size,
+        x + size, y - size, z + size,
+
+        // Left face
+        x - size, y - size, z - size,
+        x - size, y - size, z + size,
+        x - size, y + size, z + size,
+        x - size, y + size, z - size
+    ];
+
+    var colors = [
+       // Front face (blue)
+       0.0, 0.0, 1.0,
+       0.0, 0.0, 1.0,
+       0.0, 0.0, 1.0,
+       0.0, 0.0, 1.0,
+
+       // Back face (green)
+       0.0, 1.0, 0.0,
+       0.0, 1.0, 0.0,
+       0.0, 1.0, 0.0,
+       0.0, 1.0, 0.0,
+
+       // Top face (red)
+       0.0, 0.0, 1.0,
+       0.0, 0.0, 1.0,
+       0.0, 0.0, 1.0,
+       0.0, 0.0, 1.0,
+
+       // Bottom face (yellow)
+       1.0, 1.0, 0.0,
+       1.0, 1.0, 0.0,
+       1.0, 1.0, 0.0,
+       1.0, 1.0, 0.0,
+
+       // Right face (cyan)
+       0.0, 0.0, 1.0,
+       0.0, 0.0, 1.0,
+       0.0, 0.0, 1.0,
+       0.0, 0.0, 1.0,
+
+       // Left face (magenta)
+       0.0, 0.0, 1.0,
+       0.0, 0.0, 1.0,
+       0.0, 0.0, 1.0,
+       0.0, 0.0, 1.0,
+    ];
+
+    var faces = [
+        // Front face
+        0, 1, 2,
+        0, 2, 3,
+
+        // Back face
+        4, 5, 6,
+        4, 6, 7,
+
+        // Top face
+        8, 9, 10,
+        8, 10, 11,
+
+        // Bottom face
+        12, 13, 14,
+        12, 14, 15,
+
+        // Right face
+        16, 17, 18,
+        16, 18, 19,
+
+        // Left face
+        20, 21, 22,
+        20, 22, 23
+    ];
+
+    return { vertices: vertices, colors: colors, faces: faces };
+}
+
 //--------------------------------------kirby------------------------------------
 
 // Sphere
@@ -1375,6 +1587,29 @@ function main() {
     GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES23);
     GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(log.faces), GL.STATIC_DRAW);
 
+    // kubus
+    var kubus = generateCube(2, 2, -7, 3);
+    var TUBE_VERTEX31 = GL.createBuffer();
+    GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX31);
+    GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(kubus.vertices), GL.STATIC_DRAW);
+    var TUBE_COLORS31 = GL.createBuffer();
+    GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_COLORS31);
+    GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(kubus.colors), GL.STATIC_DRAW);
+    var TUBE_FACES31 = GL.createBuffer();
+    GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES31);
+    GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(kubus.faces), GL.STATIC_DRAW);
+
+    // pintu
+    var pintu = generatePintu(2, 0.5, -5.45, 1.5);
+    var TUBE_VERTEX32 = GL.createBuffer();
+    GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX32);
+    GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(pintu.vertices), GL.STATIC_DRAW);
+    var TUBE_COLORS32 = GL.createBuffer();
+    GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_COLORS32);
+    GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(pintu.colors), GL.STATIC_DRAW);
+    var TUBE_FACES32 = GL.createBuffer();
+    GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES32);
+    GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(pintu.faces), GL.STATIC_DRAW);
 
     //matrix
     var PROJECTION_MATRIX = LIBS.get_projection(40, CANVAS.width / CANVAS.height, 1, 100);
@@ -1382,7 +1617,7 @@ function main() {
     var MODEL_MATRIX = LIBS.get_I4();
     var MODEL_MATRIX2 = LIBS.get_I4();
     var MODEL_MATRIX3 = LIBS.get_I4();
-
+    var MODEL_MATRIX4 = LIBS.get_I4();
 
     // Event listener untuk mouse movement
     document.addEventListener('mousemove', function (event) {
@@ -1479,7 +1714,7 @@ function main() {
     let walkingPhase = 0;
     var kaki_z = 0;
     var range = 0;
-    let stepLength = 0;
+    let stepLength = 0.1;
     var gerakBadan = 0;
     var animate = function (time) {
         GL.viewport(0, 0, CANVAS.width, CANVAS.height);
@@ -1511,7 +1746,7 @@ function main() {
         } else {
             kaki_z += 0.025;
             gerakBadan = 0.025;
-            stepLength = 0.1 * Math.sin(walkingPhase * 2 * Math.PI);
+            stepLength = 0.1 * Math.sin(walkingPhase * 2 * Math.PI) * 2;
         }
        
         let kaki_kiri_MODEL_MATRIX = LIBS.get_I4();
@@ -1794,11 +2029,28 @@ function main() {
         GL.uniformMatrix4fv(_MMatrix, false, MODEL_MATRIX3);
         GL.drawElements(GL.TRIANGLES, log.faces.length, GL.UNSIGNED_SHORT, 0);
 
-   
+        // kubus
+        GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX31);
+        GL.vertexAttribPointer(_position, 3, GL.FLOAT, false, 0, 0);
+        GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_COLORS31);
+        GL.vertexAttribPointer(_color, 3, GL.FLOAT, false, 0, 0);
+        GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES31);
+        GL.uniformMatrix4fv(_PMatrix, false, PROJECTION_MATRIX);
+        GL.uniformMatrix4fv(_VMatrix, false, VIEW_MATRIX);
+        GL.uniformMatrix4fv(_MMatrix, false, MODEL_MATRIX4);
+        GL.drawElements(GL.TRIANGLES, kubus.faces.length, GL.UNSIGNED_SHORT, 0);
 
+        // pintu
+        GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX32);
+        GL.vertexAttribPointer(_position, 3, GL.FLOAT, false, 0, 0);
+        GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_COLORS32);
+        GL.vertexAttribPointer(_color, 3, GL.FLOAT, false, 0, 0);
+        GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES32);
+        GL.uniformMatrix4fv(_PMatrix, false, PROJECTION_MATRIX);
+        GL.uniformMatrix4fv(_VMatrix, false, VIEW_MATRIX);
+        GL.uniformMatrix4fv(_MMatrix, false, MODEL_MATRIX4);
+        GL.drawElements(GL.TRIANGLES, pintu.faces.length, GL.UNSIGNED_SHORT, 0);
         
-        GL.flush();
-
         window.requestAnimationFrame(animate);
     };
 
