@@ -659,7 +659,7 @@ function generateLenganM(x, y, z, radius, height, segments, scaleX, scaleY, scal
     var colors = [];
 
     var rainbowColors = [
-        [28 / 255, 22 / 255, 120 / 255] 
+        [28 / 255, 22 / 255, 120 / 255]
     ];
 
     for (var i = 0; i <= segments; i++) {
@@ -743,7 +743,7 @@ function generateTanganM(x, y, z, radius, segments, ovalScaleX, ovalScaleY, oval
     return { vertices: vertices, colors: colors, faces: faces };
 }
 
-function generatePedangM(x, y, z, radius, segments, ScaleX, ScaleY, ScaleZ) {
+function generatePedangM(x, y, z, radius, segments, ScaleX, ScaleY, ScaleZ, rotationX, rotationY, rotationZ) {
     var vertices = [];
     var colors = [];
 
@@ -763,7 +763,17 @@ function generatePedangM(x, y, z, radius, segments, ScaleX, ScaleY, ScaleZ) {
             var xCoord = cosLon * vLat * ScaleX;
             var yCoord = sinLon * vLat * ScaleY;
             var zCoord = Math.pow(vLat, 2) * ScaleZ;
-
+            // Rotasi
+            var rotatedX = xCoord * Math.cos(rotationZ) - yCoord * Math.sin(rotationZ);
+            var rotatedY = xCoord * Math.sin(rotationZ) + yCoord * Math.cos(rotationZ);
+            var rotatedZ = zCoord;
+            // Pemutaran tambahan untuk diagonal
+            rotatedY = rotatedY * Math.cos(rotationX) - rotatedZ * Math.sin(rotationX);
+            rotatedZ = rotatedY * Math.sin(rotationX) + rotatedZ * Math.cos(rotationX);
+            // Rotasi horizontal (rotasi pada sumbu Y)
+            var rotatedXHorizontal = rotatedX * Math.cos(rotationY) - rotatedZ * Math.sin(rotationY);
+            rotatedZ = rotatedX * Math.sin(rotationY) + rotatedZ * Math.cos(rotationY);
+            rotatedX = rotatedXHorizontal;
             var vertexX = x + radius * xCoord;
             var vertexY = y + radius * yCoord;
             var vertexZ = z + radius * zCoord;
@@ -794,7 +804,7 @@ function generateHandleM(x, y, z, radius, height, segments, scaleX, scaleY, scal
     var colors = [];
 
     var rainbowColors = [
-        [0 / 255, 128 / 255, 255 / 255] 
+        [0 / 255, 128 / 255, 255 / 255]
     ];
 
     for (var i = 0; i <= segments; i++) {
@@ -1138,7 +1148,7 @@ function main() {
     var TUBE_FACES12 = GL.createBuffer();
     GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES12);
     GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(badanMetaknight.faces), GL.STATIC_DRAW);
-        
+
     // Mata kanan: x, y, z, radius, segments, ovalScaleX, ovalScaleY, ovalScaleZ
     var mata_Kanan = generateMataM(3.9, 0.1, 1.45, 0.175, 100, 0.7, 1.8, 0.7);
     var TUBE_VERTEX13 = GL.createBuffer();
@@ -1163,33 +1173,92 @@ function main() {
     GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES14);
     GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(mata_Kiri.faces), GL.STATIC_DRAW);
 
-
-     //                                              Bagian Tangan
+    //                                              Bagian Tangan
     // Lengan Kanan: x, y, z, radius, height, segments, scaleX, scaleY, scaleZ, rotationX, rotationY, rotationZ
-    var lengan_kanan = generateLengan(1.9, 0, 0, 1, 1, 100, 0.2, 0.2, 0.4, 0, (Math.PI / 2), 0);
-    var TUBE_VERTEX11 = GL.createBuffer();
-    GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX11);
+    var lengan_kanan = generateLenganM(4.6, 0, 0.5, 1, 1, 100, 0.2, 0.2, 0.4, 0, (Math.PI / 2), 0);
+    var TUBE_VERTEX15 = GL.createBuffer();
+    GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX15);
     GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(lengan_kanan.vertices), GL.STATIC_DRAW);
-    var TUBE_COLORS11 = GL.createBuffer();
-    GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_COLORS11);
+    var TUBE_COLORS15 = GL.createBuffer();
+    GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_COLORS15);
     GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(lengan_kanan.colors), GL.STATIC_DRAW);
-    var TUBE_FACES11 = GL.createBuffer();
-    GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES11);
+    var TUBE_FACES15 = GL.createBuffer();
+    GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES15);
     GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(lengan_kanan.faces), GL.STATIC_DRAW);
 
     // Lengan Kiri: x, y, z, radius, height, segments, scaleX, scaleY, scaleZ, rotationX, rotationY, rotationZ
-    var lengan_kiri = generateLengan(-1.9, 0, 0, 1, 1, 100, 0.2, 0.2, 0.4, 0, (Math.PI / 2), 0);
-    var TUBE_VERTEX12 = GL.createBuffer();
-    GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX12);
+    var lengan_kiri = generateLenganM(2.35, 0, 0.5, 1, 1, 100, 0.2, 0.2, 0.4, 0, (Math.PI / 2), 0);
+    var TUBE_VERTEX16 = GL.createBuffer();
+    GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX16);
     GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(lengan_kiri.vertices), GL.STATIC_DRAW);
-    var TUBE_COLORS12 = GL.createBuffer();
-    GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_COLORS12);
+    var TUBE_COLORS16 = GL.createBuffer();
+    GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_COLORS16);
     GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(lengan_kiri.colors), GL.STATIC_DRAW);
-    var TUBE_FACES12 = GL.createBuffer();
-    GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES12);
+    var TUBE_FACES16 = GL.createBuffer();
+    GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES16);
     GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(lengan_kiri.faces), GL.STATIC_DRAW);
 
+    // Lengan Kiri: x, y, z, radius, height, segments, scaleX, scaleY, scaleZ, rotationX, rotationY, rotationZ
+    var tanganM_kiri = generateTanganM(2, 0, 0.6, 0.5, 100, 0.8, 0.8, 0.8);
+    var TUBE_VERTEX17 = GL.createBuffer();
+    GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX17);
+    GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(tanganM_kiri.vertices), GL.STATIC_DRAW);
+    var TUBE_COLORS17 = GL.createBuffer();
+    GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_COLORS17);
+    GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(tanganM_kiri.colors), GL.STATIC_DRAW);
+    var TUBE_FACES17 = GL.createBuffer();
+    GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES17);
+    GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(tanganM_kiri.faces), GL.STATIC_DRAW);
+
+    // Lengan Kiri: x, y, z, radius, height, segments, scaleX, scaleY, scaleZ, rotationX, rotationY, rotationZ
+    var tanganM_Kanan = generateTanganM(5, 0, 0.6, 0.5, 100, 0.8, 0.8, 0.8);
+    var TUBE_VERTEX18 = GL.createBuffer();
+    GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX18);
+    GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(tanganM_Kanan.vertices), GL.STATIC_DRAW);
+    var TUBE_COLORS18 = GL.createBuffer();
+    GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_COLORS18);
+    GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(tanganM_Kanan.colors), GL.STATIC_DRAW);
+    var TUBE_FACES18 = GL.createBuffer();
+    GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES18);
+    GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(tanganM_Kanan.faces), GL.STATIC_DRAW);
+
+    // Lengan Kiri: x, y, z, radius, height, segments, scaleX, scaleY, scaleZ, rotationX, rotationY, rotationZ
+    var pedang = generatePedangM(2, 0, 3, 0.1, 100, 0.8,  0.8, -10, 0, (Math.PI / 2), 0);
+    var TUBE_VERTEX19 = GL.createBuffer();
+    GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX19);
+    GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(pedang.vertices), GL.STATIC_DRAW);
+    var TUBE_COLORS19 = GL.createBuffer();
+    GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_COLORS19);
+    GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(pedang.colors), GL.STATIC_DRAW);
+    var TUBE_FACES19 = GL.createBuffer();
+    GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES19);
+    GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(pedang.faces), GL.STATIC_DRAW);
     
+    // kaki 
+    var kaki_kanan = generateKakiM(4.5, -0.95, 0.8, 1, 100, 0.5, 0.2, 0.7); // badan: x, y, z, radius, segments, ScaleX, ScaleY, ScaleZ
+    var TUBE_VERTEX20 = GL.createBuffer();
+    GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX20);
+    GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(kaki_kanan.vertices), GL.STATIC_DRAW);
+    var TUBE_COLORS20 = GL.createBuffer();
+    GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_COLORS20);
+    GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(kaki_kanan.colors), GL.STATIC_DRAW);
+    var TUBE_FACES20 = GL.createBuffer();
+    GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES20);
+    GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(kaki_kanan.faces), GL.STATIC_DRAW);
+
+    // kaki 
+    var kaki_kiri = generateKakiM(3.0, -0.95, 0.8, 1, 100, 0.5, 0.2, 0.7); // badan: x, y, z, radius, segments, ScaleX, ScaleY, ScaleZ
+    var TUBE_VERTEX21 = GL.createBuffer();
+    GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX21);
+    GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(kaki_kiri.vertices), GL.STATIC_DRAW);
+    var TUBE_COLORS21 = GL.createBuffer();
+    GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_COLORS21);
+    GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(kaki_kiri.colors), GL.STATIC_DRAW);
+    var TUBE_FACES21 = GL.createBuffer();
+    GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES21);
+    GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(kaki_kiri.faces), GL.STATIC_DRAW);
+
+
     //matrix
     var PROJECTION_MATRIX = LIBS.get_projection(40, CANVAS.width / CANVAS.height, 1, 100);
     var VIEW_MATRIX = LIBS.get_I4();
@@ -1451,7 +1520,7 @@ function main() {
         GL.uniformMatrix4fv(_VMatrix, false, VIEW_MATRIX);
         GL.uniformMatrix4fv(_MMatrix, false, MODEL_MATRIX);
         GL.drawElements(GL.TRIANGLES, mata_Kanan.faces.length, GL.UNSIGNED_SHORT, 0);
-        
+
         // mataMetaknight
         GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX14);
         GL.vertexAttribPointer(_position, 3, GL.FLOAT, false, 0, 0);
@@ -1462,6 +1531,85 @@ function main() {
         GL.uniformMatrix4fv(_VMatrix, false, VIEW_MATRIX);
         GL.uniformMatrix4fv(_MMatrix, false, MODEL_MATRIX);
         GL.drawElements(GL.TRIANGLES, mata_Kiri.faces.length, GL.UNSIGNED_SHORT, 0);
+
+        // lenganMetaknight
+        GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX15);
+        GL.vertexAttribPointer(_position, 3, GL.FLOAT, false, 0, 0);
+        GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_COLORS15);
+        GL.vertexAttribPointer(_color, 3, GL.FLOAT, false, 0, 0);
+        GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES15);
+        GL.uniformMatrix4fv(_PMatrix, false, PROJECTION_MATRIX);
+        GL.uniformMatrix4fv(_VMatrix, false, VIEW_MATRIX);
+        GL.uniformMatrix4fv(_MMatrix, false, MODEL_MATRIX);
+        GL.drawElements(GL.TRIANGLES, lengan_kanan.faces.length, GL.UNSIGNED_SHORT, 0);
+
+        // lenganMetaknight
+        GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX16);
+        GL.vertexAttribPointer(_position, 3, GL.FLOAT, false, 0, 0);
+        GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_COLORS16);
+        GL.vertexAttribPointer(_color, 3, GL.FLOAT, false, 0, 0);
+        GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES16);
+        GL.uniformMatrix4fv(_PMatrix, false, PROJECTION_MATRIX);
+        GL.uniformMatrix4fv(_VMatrix, false, VIEW_MATRIX);
+        GL.uniformMatrix4fv(_MMatrix, false, MODEL_MATRIX);
+        GL.drawElements(GL.TRIANGLES, lengan_kiri.faces.length, GL.UNSIGNED_SHORT, 0);
+
+        //tanganMeta
+        GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX17);
+        GL.vertexAttribPointer(_position, 3, GL.FLOAT, false, 0, 0);
+        GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_COLORS17);
+        GL.vertexAttribPointer(_color, 3, GL.FLOAT, false, 0, 0);
+        GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES17);
+        GL.uniformMatrix4fv(_PMatrix, false, PROJECTION_MATRIX);
+        GL.uniformMatrix4fv(_VMatrix, false, VIEW_MATRIX);
+        GL.uniformMatrix4fv(_MMatrix, false, MODEL_MATRIX);
+        GL.drawElements(GL.TRIANGLES, tanganM_kiri.faces.length, GL.UNSIGNED_SHORT, 0);
+
+        //tanganMeta
+        GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX18);
+        GL.vertexAttribPointer(_position, 3, GL.FLOAT, false, 0, 0);
+        GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_COLORS18);
+        GL.vertexAttribPointer(_color, 3, GL.FLOAT, false, 0, 0);
+        GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES18);
+        GL.uniformMatrix4fv(_PMatrix, false, PROJECTION_MATRIX);
+        GL.uniformMatrix4fv(_VMatrix, false, VIEW_MATRIX);
+        GL.uniformMatrix4fv(_MMatrix, false, MODEL_MATRIX);
+        GL.drawElements(GL.TRIANGLES, tanganM_Kanan.faces.length, GL.UNSIGNED_SHORT, 0);
+
+        //pedang
+        GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX19);
+        GL.vertexAttribPointer(_position, 3, GL.FLOAT, false, 0, 0);
+        GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_COLORS19);
+        GL.vertexAttribPointer(_color, 3, GL.FLOAT, false, 0, 0);
+        GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES19);
+        GL.uniformMatrix4fv(_PMatrix, false, PROJECTION_MATRIX);
+        GL.uniformMatrix4fv(_VMatrix, false, VIEW_MATRIX);
+        GL.uniformMatrix4fv(_MMatrix, false, MODEL_MATRIX);
+        GL.drawElements(GL.TRIANGLES, pedang.faces.length, GL.UNSIGNED_SHORT, 0);
+
+        //kakiM
+        GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX20);
+        GL.vertexAttribPointer(_position, 3, GL.FLOAT, false, 0, 0);
+        GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_COLORS20);
+        GL.vertexAttribPointer(_color, 3, GL.FLOAT, false, 0, 0);
+        GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES20);
+        GL.uniformMatrix4fv(_PMatrix, false, PROJECTION_MATRIX);
+        GL.uniformMatrix4fv(_VMatrix, false, VIEW_MATRIX);
+        GL.uniformMatrix4fv(_MMatrix, false, MODEL_MATRIX);
+        GL.drawElements(GL.TRIANGLES, kaki_kanan.faces.length, GL.UNSIGNED_SHORT, 0);
+
+        //kakiM
+        GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX21);
+        GL.vertexAttribPointer(_position, 3, GL.FLOAT, false, 0, 0);
+        GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_COLORS21);
+        GL.vertexAttribPointer(_color, 3, GL.FLOAT, false, 0, 0);
+        GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES21);
+        GL.uniformMatrix4fv(_PMatrix, false, PROJECTION_MATRIX);
+        GL.uniformMatrix4fv(_VMatrix, false, VIEW_MATRIX);
+        GL.uniformMatrix4fv(_MMatrix, false, MODEL_MATRIX);
+        GL.drawElements(GL.TRIANGLES, kaki_kiri.faces.length, GL.UNSIGNED_SHORT, 0);
+
+
 
 
 
