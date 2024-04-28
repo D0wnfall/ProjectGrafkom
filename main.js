@@ -838,7 +838,6 @@ function main() {
 
         if (keysPressed.w) {
             LIBS.translateZ(VIEW_MATRIX, -cameraSpeed);
-
         }
         if (keysPressed.a) {
             LIBS.translateX(VIEW_MATRIX, -cameraSpeed);
