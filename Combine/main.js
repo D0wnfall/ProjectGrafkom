@@ -1504,9 +1504,9 @@ function main() {
         }
         range += 1;
 
-        if (range >= 50) {
+        if (range >= 100) {
             stepLength = 0;
-            kaki_z = 1;
+            kaki_z = 2.5;
             gerakBadan = 0
         } else {
             kaki_z += 0.025;
