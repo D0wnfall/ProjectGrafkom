@@ -155,41 +155,88 @@ function generatePintu(x, y, z, size) {
     ];
 
     var colors = [
-       // Front face (blue)
-       0.0, 0.0, 1.0,
-       0.0, 0.0, 1.0,
-       0.0, 0.0, 1.0,
-       0.0, 0.0, 1.0,
+        // Front face (blue)
+        0.0, 0.0, 1.0,
+        0.0, 0.0, 1.0,
+        0.0, 0.0, 1.0,
+        0.0, 0.0, 1.0,
 
-       // Back face (green)
-       0.0, 1.0, 0.0,
-       0.0, 1.0, 0.0,
-       0.0, 1.0, 0.0,
-       0.0, 1.0, 0.0,
+        // Back face (green)
+        0.0, 1.0, 0.0,
+        0.0, 1.0, 0.0,
+        0.0, 1.0, 0.0,
+        0.0, 1.0, 0.0,
 
-       // Top face (red)
-       0.0, 0.0, 1.0,
-       0.0, 0.0, 1.0,
-       0.0, 0.0, 1.0,
-       0.0, 0.0, 1.0,
+        // Top face (red)
+        0.0, 0.0, 1.0,
+        0.0, 0.0, 1.0,
+        0.0, 0.0, 1.0,
+        0.0, 0.0, 1.0,
 
-       // Bottom face (yellow)
-       1.0, 1.0, 0.0,
-       1.0, 1.0, 0.0,
-       1.0, 1.0, 0.0,
-       1.0, 1.0, 0.0,
+        // Bottom face (yellow)
+        1.0, 1.0, 0.0,
+        1.0, 1.0, 0.0,
+        1.0, 1.0, 0.0,
+        1.0, 1.0, 0.0,
 
-       // Right face (cyan)
-       0.0, 0.0, 1.0,
-       0.0, 0.0, 1.0,
-       0.0, 0.0, 1.0,
-       0.0, 0.0, 1.0,
+        // Right face (cyan)
+        0.0, 0.0, 1.0,
+        0.0, 0.0, 1.0,
+        0.0, 0.0, 1.0,
+        0.0, 0.0, 1.0,
 
-       // Left face (magenta)
-       0.0, 0.0, 1.0,
-       0.0, 0.0, 1.0,
-       0.0, 0.0, 1.0,
-       0.0, 0.0, 1.0,
+        // Left face (magenta)
+        0.0, 0.0, 1.0,
+        0.0, 0.0, 1.0,
+        0.0, 0.0, 1.0,
+        0.0, 0.0, 1.0,
+    ];
+
+    var faces = [
+        // Front face
+        0, 1, 2,
+        0, 2, 3,
+
+        // Back face
+        4, 5, 6,
+        4, 6, 7,
+
+        // Top face
+        8, 9, 10,
+        8, 10, 11,
+
+        // Bottom face
+        12, 13, 14,
+        12, 14, 15,
+
+        // Right face
+        16, 17, 18,
+        16, 18, 19,
+
+        // Left face
+        20, 21, 22,
+        20, 22, 23
+    ];
+
+    return { vertices: vertices, colors: colors, faces: faces };
+}
+
+function generateWorld(x, y, z, size) {
+    var vertices = [
+        // Top face
+        x - size, y + size, z - size,
+        x - size, y + size, z + size,
+        x + size, y + size, z + size,
+        x + size, y + size, z - size,
+    ];
+
+    var colors = [
+
+        // Back face (green)
+        0.0, 1.0, 0.0,
+        0.0, 1.0, 0.0,
+        0.0, 1.0, 0.0,
+        0.0, 1.0, 0.0,
     ];
 
     var faces = [
@@ -647,7 +694,7 @@ function generateTongkat(x, y, z, radius, height, segments, ScaleX, ScaleY, Scal
     var colors = [];
 
     var rainbowColors = [
-        [0 / 255, 255 / 255, 100 / 255]
+        [125 / 255, 125 / 255, 125 / 255]
     ];
 
     for (var i = 0; i <= segments; i++) {
@@ -1218,6 +1265,55 @@ function generateLog(x, y, z, radius, height, segments, ScaleX, ScaleY, ScaleZ) 
     return { vertices: vertices, colors: colors, faces: faces };
 }
 
+function generateSphere(x, y, z, radius, segments) {
+    var vertices = [];
+    var colors = [];
+
+    var angleIncrement = (2 * Math.PI) / segments;
+
+    var rainbowColors = [
+        [1.0, 0.0, 0.0]
+    ];
+
+    for (var i = 0; i <= segments; i++) {
+        var latAngle = Math.PI * (-0.5 + (i / segments));
+        var sinLat = Math.sin(latAngle);
+        var cosLat = Math.cos(latAngle);
+
+        for (var j = 0; j <= segments; j++) {
+            var lonAngle = 2 * Math.PI * (j / segments);
+            var sinLon = Math.sin(lonAngle);
+            var cosLon = Math.cos(lonAngle);
+
+            var xCoord = cosLon * cosLat;
+            var yCoord = sinLon * cosLat;
+            var zCoord = sinLat;
+
+            var vertexX = x + radius * xCoord;
+            var vertexY = y + radius * yCoord;
+            var vertexZ = z + radius * zCoord;
+
+            vertices.push(vertexX, vertexY, vertexZ);
+
+            var colorIndex = j % rainbowColors.length;
+            colors = colors.concat(rainbowColors[colorIndex]);
+        }
+    }
+
+    var faces = [];
+    for (var i = 0; i < segments; i++) {
+        for (var j = 0; j < segments; j++) {
+            var index = i * (segments + 1) + j;
+            var nextIndex = index + segments + 1;
+
+            faces.push(index, nextIndex, index + 1);
+            faces.push(nextIndex, nextIndex + 1, index + 1);
+        }
+    }
+    return { vertices: vertices, colors: colors, faces: faces };
+}
+
+
 
 
 
@@ -1527,7 +1623,7 @@ function main() {
     GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(tanganM_Kanan.faces), GL.STATIC_DRAW);
 
     // Lengan Kiri: x, y, z, radius, height, segments, scaleX, scaleY, scaleZ, rotationX, rotationY, rotationZ
-    var pedang = generatePedangM(2, 0, 3, 0.1, 100, 0.8,  0.8, -10, 0, (Math.PI / 2), 0);
+    var pedang = generatePedangM(2, 0, 3, 0.1, 100, 0.8, 0.8, -10, 0, (Math.PI / 2), 0);
     var TUBE_VERTEX19 = GL.createBuffer();
     GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX19);
     GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(pedang.vertices), GL.STATIC_DRAW);
@@ -1537,7 +1633,7 @@ function main() {
     var TUBE_FACES19 = GL.createBuffer();
     GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES19);
     GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(pedang.faces), GL.STATIC_DRAW);
-    
+
     // kaki 
     var kaki_kanan = generateKakiM(4.10, -0.95, 0.8, 1, 100, 0.5, 0.2, 0.7); // badan: x, y, z, radius, segments, ScaleX, ScaleY, ScaleZ
     var TUBE_VERTEX20 = GL.createBuffer();
@@ -1610,6 +1706,31 @@ function main() {
     var TUBE_FACES32 = GL.createBuffer();
     GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES32);
     GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(pintu.faces), GL.STATIC_DRAW);
+
+    //world
+    var world = generateWorld(0, -51, 0, 50);
+    var TUBE_VERTEX33 = GL.createBuffer();
+    GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX33);
+    GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(world.vertices), GL.STATIC_DRAW);
+    var TUBE_COLORS33 = GL.createBuffer();
+    GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_COLORS33);
+    GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(world.colors), GL.STATIC_DRAW);
+    var TUBE_FACES33 = GL.createBuffer();
+    GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES33);
+    GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(world.faces), GL.STATIC_DRAW);
+
+
+    //atap
+    var atap = generateSphere(2, 5, -7, 3,100);
+    var TUBE_VERTEX34 = GL.createBuffer();
+    GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX34);
+    GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(atap.vertices), GL.STATIC_DRAW);
+    var TUBE_COLORS34 = GL.createBuffer();
+    GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_COLORS34);
+    GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(atap.colors), GL.STATIC_DRAW);
+    var TUBE_FACES34 = GL.createBuffer();
+    GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES34);
+    GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(atap.faces), GL.STATIC_DRAW);
 
     //matrix
     var PROJECTION_MATRIX = LIBS.get_projection(40, CANVAS.width / CANVAS.height, 1, 100);
@@ -1739,21 +1860,21 @@ function main() {
         }
         range += 1;
 
-        if (range >= 100) {
+        if (range >= 400) {
             stepLength = 0;
-            kaki_z = 2.5;
+            kaki_z = 10;
             gerakBadan = 0
         } else {
             kaki_z += 0.025;
             gerakBadan = 0.025;
             stepLength = 0.1 * Math.sin(walkingPhase * 2 * Math.PI) * 2;
         }
-       
+
         let kaki_kiri_MODEL_MATRIX = LIBS.get_I4();
         let kaki_kanan_MODEL_MATRIX = LIBS.get_I4();
         let kaki_kiri_M_MODEL_MATRIX = LIBS.get_I4();
         let kaki_kanan_M_MODEL_MATRIX = LIBS.get_I4();
-        
+
         LIBS.translateZ(kaki_kiri_MODEL_MATRIX, stepLength);
         LIBS.rotateX(kaki_kiri_MODEL_MATRIX, stepLength);
 
@@ -2050,7 +2171,31 @@ function main() {
         GL.uniformMatrix4fv(_VMatrix, false, VIEW_MATRIX);
         GL.uniformMatrix4fv(_MMatrix, false, MODEL_MATRIX4);
         GL.drawElements(GL.TRIANGLES, pintu.faces.length, GL.UNSIGNED_SHORT, 0);
-        
+
+
+        // world
+        GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX33);
+        GL.vertexAttribPointer(_position, 3, GL.FLOAT, false, 0, 0);
+        GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_COLORS33);
+        GL.vertexAttribPointer(_color, 3, GL.FLOAT, false, 0, 0);
+        GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES33);
+        GL.uniformMatrix4fv(_PMatrix, false, PROJECTION_MATRIX);
+        GL.uniformMatrix4fv(_VMatrix, false, VIEW_MATRIX);
+        GL.uniformMatrix4fv(_MMatrix, false, MODEL_MATRIX4);
+        GL.drawElements(GL.TRIANGLES, world.faces.length, GL.UNSIGNED_SHORT, 0);
+
+
+        // atap
+        GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX34);
+        GL.vertexAttribPointer(_position, 3, GL.FLOAT, false, 0, 0);
+        GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_COLORS34);
+        GL.vertexAttribPointer(_color, 3, GL.FLOAT, false, 0, 0);
+        GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES34);
+        GL.uniformMatrix4fv(_PMatrix, false, PROJECTION_MATRIX);
+        GL.uniformMatrix4fv(_VMatrix, false, VIEW_MATRIX);
+        GL.uniformMatrix4fv(_MMatrix, false, MODEL_MATRIX4);
+        GL.drawElements(GL.TRIANGLES, atap.faces.length, GL.UNSIGNED_SHORT, 0);
+
         window.requestAnimationFrame(animate);
     };
 
