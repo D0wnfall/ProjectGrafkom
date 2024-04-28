@@ -682,6 +682,8 @@ function generateKaki(x, y, z, radius, segments, ovalScaleX, ovalScaleY, ovalSca
     return { vertices: vertices, colors: colors, faces: faces };
 }
 
+
+
 function updateViewMatrix() {
     var sensitivity = 0.001; // Adjust sensitivity here
     var dx = mouseX - prevMouseX;

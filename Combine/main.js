@@ -8,6 +8,68 @@ var keysPressed = {
     s: false,
     d: false
 };
+function generateCurve(controlPoints, segments, zOffset, thickness) {
+    var vertices = [];
+    var colors = [];
+
+    var rainbowColors = [[0, 0, 0]];
+
+    for (var i = 0; i <= segments; i++) {
+        var t = i / segments;
+        var x = Math.pow(1 - t, 3) * controlPoints[0][0] + 3 * Math.pow(1 - t, 2) * t * controlPoints[1][0] + 3 * (1 - t) * Math.pow(t, 2) * controlPoints[2][0] + Math.pow(t, 3) * controlPoints[3][0];
+        var y = Math.pow(1 - t, 3) * controlPoints[0][1] + 3 * Math.pow(1 - t, 2) * t * controlPoints[1][1] + 3 * (1 - t) * Math.pow(t, 2) * controlPoints[2][1] + Math.pow(t, 3) * controlPoints[3][1];
+        var z = Math.pow(1 - t, 3) * controlPoints[0][2] + 3 * Math.pow(1 - t, 2) * t * controlPoints[1][2] + 3 * (1 - t) * Math.pow(t, 2) * controlPoints[2][2] + Math.pow(t, 3) * controlPoints[3][2];
+
+        vertices.push(x - thickness, y - thickness, z + zOffset);
+        vertices.push(x + thickness, y - thickness, z + zOffset);
+        vertices.push(x, y + thickness, z + zOffset);
+
+        var colorIndex = Math.floor(t * rainbowColors.length);
+        colors = colors.concat(rainbowColors[colorIndex]);
+        colors = colors.concat(rainbowColors[colorIndex]);
+        colors = colors.concat(rainbowColors[colorIndex]);
+    }
+
+    var faces = [];
+    for (var i = 0; i < segments; i++) {
+        var index = i * 3;
+        faces.push(index, index + 1, index + 2); // create triangles for each vertex
+    }
+
+    return { vertices: vertices, colors: colors, faces: faces };
+}
+
+function generateCurve2(controlPoints, segments, zOffset, thickness) {
+    var vertices = [];
+    var colors = [];
+
+    var rainbowColors = [[0, 0, 0]];
+
+    for (var i = 0; i <= segments; i++) {
+        var t = i / segments;
+        var x = Math.pow(1 - t, 3) * controlPoints[0][0] + 3 * Math.pow(1 - t, 2) * t * controlPoints[1][0] + 3 * (1 - t) * Math.pow(t, 2) * controlPoints[2][0] + Math.pow(t, 3) * controlPoints[3][0];
+        var y = Math.pow(1 - t, 3) * controlPoints[0][1] + 3 * Math.pow(1 - t, 2) * t * controlPoints[1][1] + 3 * (1 - t) * Math.pow(t, 2) * controlPoints[2][1] + Math.pow(t, 3) * controlPoints[3][1];
+        var z = Math.pow(1 - t, 3) * controlPoints[0][2] + 3 * Math.pow(1 - t, 2) * t * controlPoints[1][2] + 3 * (1 - t) * Math.pow(t, 2) * controlPoints[2][2] + Math.pow(t, 3) * controlPoints[3][2];
+
+        vertices.push(x - thickness, y - thickness, z + zOffset);
+        vertices.push(x + thickness, y - thickness, z + zOffset);
+        vertices.push(x, y + thickness, z + zOffset);
+
+        var colorIndex = Math.floor(t * rainbowColors.length);
+        colors = colors.concat(rainbowColors[colorIndex]);
+        colors = colors.concat(rainbowColors[colorIndex]);
+        colors = colors.concat(rainbowColors[colorIndex]);
+    }
+
+    var faces = [];
+    for (var i = 0; i < segments; i++) {
+        var index = i * 3;
+        faces.push(index, index + 1, index + 2); // create triangles for each vertex
+    }
+
+    return { vertices: vertices, colors: colors, faces: faces };
+}
+
 
 function generateCube(x, y, z, size) {
     var vertices = [
@@ -1313,6 +1375,53 @@ function generateSphere(x, y, z, radius, segments) {
     return { vertices: vertices, colors: colors, faces: faces };
 }
 
+function generateSphere2(x, y, z, radius, segments) {
+    var vertices = [];
+    var colors = [];
+
+    var angleIncrement = (2 * Math.PI) / segments;
+
+    var rainbowColors = [
+        [255/255,255/255,0/255]
+    ];
+
+    for (var i = 0; i <= segments; i++) {
+        var latAngle = Math.PI * (-0.5 + (i / segments));
+        var sinLat = Math.sin(latAngle);
+        var cosLat = Math.cos(latAngle);
+
+        for (var j = 0; j <= segments; j++) {
+            var lonAngle = 2 * Math.PI * (j / segments);
+            var sinLon = Math.sin(lonAngle);
+            var cosLon = Math.cos(lonAngle);
+
+            var xCoord = cosLon * cosLat;
+            var yCoord = sinLon * cosLat;
+            var zCoord = sinLat;
+
+            var vertexX = x + radius * xCoord;
+            var vertexY = y + radius * yCoord;
+            var vertexZ = z + radius * zCoord;
+
+            vertices.push(vertexX, vertexY, vertexZ);
+
+            var colorIndex = j % rainbowColors.length;
+            colors = colors.concat(rainbowColors[colorIndex]);
+        }
+    }
+
+    var faces = [];
+    for (var i = 0; i < segments; i++) {
+        for (var j = 0; j < segments; j++) {
+            var index = i * (segments + 1) + j;
+            var nextIndex = index + segments + 1;
+
+            faces.push(index, nextIndex, index + 1);
+            faces.push(nextIndex, nextIndex + 1, index + 1);
+        }
+    }
+    return { vertices: vertices, colors: colors, faces: faces };
+}
 
 
 
@@ -1719,9 +1828,8 @@ function main() {
     GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES33);
     GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(world.faces), GL.STATIC_DRAW);
 
-
     //atap
-    var atap = generateSphere(2, 5, -7, 3,100);
+    var atap = generateSphere(2, 5, -7, 3, 100);
     var TUBE_VERTEX34 = GL.createBuffer();
     GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX34);
     GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(atap.vertices), GL.STATIC_DRAW);
@@ -1731,6 +1839,73 @@ function main() {
     var TUBE_FACES34 = GL.createBuffer();
     GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES34);
     GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(atap.faces), GL.STATIC_DRAW);
+
+
+    //atap
+    var matahari = generateSphere2(20, 15, -50, 2, 100);
+    var TUBE_VERTEX35 = GL.createBuffer();
+    GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX35);
+    GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(matahari.vertices), GL.STATIC_DRAW);
+    var TUBE_COLORS35 = GL.createBuffer();
+    GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_COLORS35);
+    GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(matahari.colors), GL.STATIC_DRAW);
+    var TUBE_FACES35 = GL.createBuffer();
+    GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES35);
+    GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(matahari.faces), GL.STATIC_DRAW);
+
+    //curve
+    // 
+    var controlPoints = [
+        [-0.3, -0.3, 0.0],    // Sedikit turun ke bawah
+        [-0.10, 0.0, 0.0],
+        [0.10, 0.0, 0.0],
+        [0.3, -0.3, 0.0]      // Sedikit turun ke bawah
+    ];
+    
+    var segments = 1000;
+    var Zoffset = 1.49;
+    var thickness = 0.01;
+
+    // Memanggil generateCurve dengan parameter-parameter yang sesuai
+    var curve = generateCurve(controlPoints, segments, Zoffset, thickness);
+    var TUBE_VERTEX36 = GL.createBuffer();
+    GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX36);
+    GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(curve.vertices), GL.STATIC_DRAW);
+    var TUBE_COLORS36 = GL.createBuffer();
+    GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_COLORS36);
+    GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(curve.colors), GL.STATIC_DRAW);
+    var TUBE_FACES36 = GL.createBuffer();
+    GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES36);
+    GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(curve.faces), GL.STATIC_DRAW);
+
+    //curve2
+    // 
+    var controlPoints = [
+        [3.3, -0.4, 0.0],    // Sedikit turun ke bawah
+        [3.4, -0.2, 0.0],
+        [3.5, -0.2, 0.0],
+        [3.7, -0.4, 0.0]      // Sedikit turun ke bawah
+    ];
+
+    var segments = 1000;
+    var Zoffset = 1.45;
+    var thickness = 0.01;
+
+    // Memanggil generateCurve2 dengan parameter-parameter yang sesuai
+    var curve2 = generateCurve2(controlPoints, segments, Zoffset, thickness);
+    var TUBE_VERTEX37 = GL.createBuffer();
+    GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX37);
+    GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(curve2.vertices), GL.STATIC_DRAW);
+    var TUBE_COLORS37 = GL.createBuffer();
+    GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_COLORS37);
+    GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(curve2.colors), GL.STATIC_DRAW);
+    var TUBE_FACES37 = GL.createBuffer();
+    GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES37);
+    GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(curve2.faces), GL.STATIC_DRAW);
+
+
+
+
 
     //matrix
     var PROJECTION_MATRIX = LIBS.get_projection(40, CANVAS.width / CANVAS.height, 1, 100);
@@ -2195,6 +2370,41 @@ function main() {
         GL.uniformMatrix4fv(_VMatrix, false, VIEW_MATRIX);
         GL.uniformMatrix4fv(_MMatrix, false, MODEL_MATRIX4);
         GL.drawElements(GL.TRIANGLES, atap.faces.length, GL.UNSIGNED_SHORT, 0);
+
+        // atap
+        GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX35);
+        GL.vertexAttribPointer(_position, 3, GL.FLOAT, false, 0, 0);
+        GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_COLORS35);
+        GL.vertexAttribPointer(_color, 3, GL.FLOAT, false, 0, 0);
+        GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES35);
+        GL.uniformMatrix4fv(_PMatrix, false, PROJECTION_MATRIX);
+        GL.uniformMatrix4fv(_VMatrix, false, VIEW_MATRIX);
+        GL.uniformMatrix4fv(_MMatrix, false, MODEL_MATRIX4);
+        GL.drawElements(GL.TRIANGLES, matahari.faces.length, GL.UNSIGNED_SHORT, 0);
+
+        //curve
+        GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX36);
+        GL.vertexAttribPointer(_position, 3, GL.FLOAT, false, 0, 0);
+        GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_COLORS36);
+        GL.vertexAttribPointer(_color, 3, GL.FLOAT, false, 0, 0);
+        GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES36);
+        GL.uniformMatrix4fv(_PMatrix, false, PROJECTION_MATRIX);
+        GL.uniformMatrix4fv(_VMatrix, false, VIEW_MATRIX);
+        GL.uniformMatrix4fv(_MMatrix, false, MODEL_MATRIX);
+        GL.drawElements(GL.TRIANGLES, curve.faces.length, GL.UNSIGNED_SHORT, 0);
+
+        //curve2
+        GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX37);
+        GL.vertexAttribPointer(_position, 3, GL.FLOAT, false, 0, 0);
+        GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_COLORS37);
+        GL.vertexAttribPointer(_color, 3, GL.FLOAT, false, 0, 0);
+        GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES37);
+        GL.uniformMatrix4fv(_PMatrix, false, PROJECTION_MATRIX);
+        GL.uniformMatrix4fv(_VMatrix, false, VIEW_MATRIX);
+        GL.uniformMatrix4fv(_MMatrix, false, MODEL_MATRIX);
+        GL.drawElements(GL.TRIANGLES, curve2.faces.length, GL.UNSIGNED_SHORT, 0);
+
+
 
         window.requestAnimationFrame(animate);
     };

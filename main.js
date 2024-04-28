@@ -726,6 +726,31 @@ function main() {
     GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES11);
     GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(tongkat.faces), GL.STATIC_DRAW);
 
+    //curve
+    // 
+    var controlPoints = [
+        [-0.5, 0.0, 0.0],
+        [-0.25, 0.5, 0.0],
+        [0.25, -0.5, 0.0],
+        [0.5, 0.0, 0.0]
+    ];
+    var segments = 100;
+    var Zoffset = 0;
+    var thickness = 0.1;
+
+    // Memanggil generateCurve dengan parameter-parameter yang sesuai
+    var curve = generateCurve(controlPoints, segments, Zoffset, thickness);
+    var TUBE_VERTEX12 = GL.createBuffer();
+    GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX12);
+    GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(curve.vertices), GL.STATIC_DRAW);
+    var TUBE_COLORS12 = GL.createBuffer();
+    GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_COLORS12);
+    GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(curve.colors), GL.STATIC_DRAW);
+    var TUBE_FACES12 = GL.createBuffer();
+    GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES12);
+    GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(curve.faces), GL.STATIC_DRAW);
+
+
 
     //matrix
     var PROJECTION_MATRIX = LIBS.get_projection(40, CANVAS.width / CANVAS.height, 1, 100);
@@ -986,6 +1011,17 @@ function main() {
         GL.uniformMatrix4fv(_VMatrix, false, VIEW_MATRIX);
         GL.uniformMatrix4fv(_MMatrix, false, MODEL_MATRIX);
         GL.drawElements(GL.TRIANGLES, tongkat.faces.length, GL.UNSIGNED_SHORT, 0);
+
+        //curve
+        GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX12);
+        GL.vertexAttribPointer(_position, 3, GL.FLOAT, false, 0, 0);
+        GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_COLORS12);
+        GL.vertexAttribPointer(_color, 3, GL.FLOAT, false, 0, 0);
+        GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES12);
+        GL.uniformMatrix4fv(_PMatrix, false, PROJECTION_MATRIX);
+        GL.uniformMatrix4fv(_VMatrix, false, VIEW_MATRIX);
+        GL.uniformMatrix4fv(_MMatrix, false, MODEL_MATRIX);
+        GL.drawElements(GL.TRIANGLES, curve.faces.length, GL.UNSIGNED_SHORT, 0);
 
         GL.flush();
 

@@ -8,42 +8,34 @@ var keysPressed = {
     s: false,
     d: false
 };
-
-//Pohon
-function generatePohon(x, y, z, radius, segments, ScaleX, ScaleY, ScaleZ) {
+// Bagian Kepala Dan Wajah
+function generateKepalaM(x, y, z, radius, segments, ovalScaleX, ovalScaleY, ovalScaleZ) {
     var vertices = [];
     var colors = [];
 
-    var angleIncrement = (2 * Math.PI) / segments;
-
     var rainbowColors = [
-        [53 / 255, 107 / 255, 22 / 255]
+        [28 / 255, 22 / 255, 120 / 255]
     ];
 
     for (var i = 0; i <= segments; i++) {
         var latAngle = Math.PI * (-0.5 + (i / segments));
-        var vLat = latAngle;
-
+        var sinLat = Math.sin(latAngle);
+        var cosLat = Math.cos(latAngle);
         for (var j = 0; j <= segments; j++) {
-            var lonAngle = 2 * Math.PI * Math.max(0, (j / segments));
+            var lonAngle = 2 * Math.PI * (j / segments);
             var sinLon = Math.sin(lonAngle);
             var cosLon = Math.cos(lonAngle);
-
-            var xCoord = cosLon * vLat * ScaleX;
-            var yCoord = sinLon * vLat * ScaleY;
-            var zCoord = Math.pow(vLat, 2) * ScaleZ;
-
+            var xCoord = cosLon * cosLat * ovalScaleX;
+            var yCoord = sinLon * cosLat * ovalScaleY;
+            var zCoord = sinLat * ovalScaleZ;
             var vertexX = x + radius * xCoord;
             var vertexY = y + radius * yCoord;
             var vertexZ = z + radius * zCoord;
-
             vertices.push(vertexX, vertexY, vertexZ);
-
             var colorIndex = j % rainbowColors.length;
             colors = colors.concat(rainbowColors[colorIndex]);
         }
     }
-
     var faces = [];
     for (var i = 0; i < segments; i++) {
         for (var j = 0; j < segments; j++) {
@@ -57,50 +49,37 @@ function generatePohon(x, y, z, radius, segments, ScaleX, ScaleY, ScaleZ) {
     return { vertices: vertices, colors: colors, faces: faces };
 }
 
-function generateTongkat(x, y, z, radius, height, segments, ScaleX, ScaleY, ScaleZ) {
+
+function generateCurve2(controlPoints, segments, zOffset, thickness) {
     var vertices = [];
     var colors = [];
 
-    var rainbowColors = [
-        [0 / 255, 255 / 255, 100 / 255]
-    ];
+    var rainbowColors = [[0, 0, 0]];
 
     for (var i = 0; i <= segments; i++) {
-        var angle = 2 * Math.PI * (i / segments);
-        var sinAngle = Math.sin(angle);
-        var cosAngle = Math.cos(angle);
+        var t = i / segments;
+        var x = Math.pow(1 - t, 3) * controlPoints[0][0] + 3 * Math.pow(1 - t, 2) * t * controlPoints[1][0] + 3 * (1 - t) * Math.pow(t, 2) * controlPoints[2][0] + Math.pow(t, 3) * controlPoints[3][0];
+        var y = Math.pow(1 - t, 3) * controlPoints[0][1] + 3 * Math.pow(1 - t, 2) * t * controlPoints[1][1] + 3 * (1 - t) * Math.pow(t, 2) * controlPoints[2][1] + Math.pow(t, 3) * controlPoints[3][1];
+        var z = Math.pow(1 - t, 3) * controlPoints[0][2] + 3 * Math.pow(1 - t, 2) * t * controlPoints[1][2] + 3 * (1 - t) * Math.pow(t, 2) * controlPoints[2][2] + Math.pow(t, 3) * controlPoints[3][2];
 
-        for (var j = 0; j <= segments; j++) {
-            var heightFraction = j / segments;
-            var xCoord = radius * cosAngle * ScaleX;
-            var yCoord = radius * sinAngle * ScaleY;
-            var zCoord = height * heightFraction - height / 2 * ScaleZ;
+        vertices.push(x - thickness, y - thickness, z + zOffset);
+        vertices.push(x + thickness, y - thickness, z + zOffset);
+        vertices.push(x, y + thickness, z + zOffset);
 
-            var vertexX = x + xCoord;
-            var vertexY = y + yCoord;
-            var vertexZ = z + zCoord;
-
-            vertices.push(vertexX, vertexY, vertexZ);
-
-            var colorIndex = j % rainbowColors.length;
-            colors = colors.concat(rainbowColors[colorIndex]);
-        }
+        var colorIndex = Math.floor(t * rainbowColors.length);
+        colors = colors.concat(rainbowColors[colorIndex]);
+        colors = colors.concat(rainbowColors[colorIndex]);
+        colors = colors.concat(rainbowColors[colorIndex]);
     }
 
     var faces = [];
     for (var i = 0; i < segments; i++) {
-        for (var j = 0; j < segments; j++) {
-            var index = i * (segments + 1) + j;
-            var nextIndex = index + segments + 1;
-
-            faces.push(index, nextIndex, index + 1);
-            faces.push(nextIndex, nextIndex + 1, index + 1);
-        }
+        var index = i * 3;
+        faces.push(index, index + 1, index + 2); // create triangles for each vertex
     }
+
     return { vertices: vertices, colors: colors, faces: faces };
 }
-
-
 
 function updateViewMatrix() {
     var sensitivity = 0.001; // Adjust sensitivity here
@@ -188,29 +167,46 @@ function main() {
     GL.enableVertexAttribArray(_position);
     GL.useProgram(SHADER_PROGRAM);
 
-    //Pohon 
-    var pohon = generatePohon(0, 0, -5, 1, 100, 1, 1, 2); // badan: x, y, z, radius, segments, ScaleX, ScaleY, ScaleZ
-    var TUBE_VERTEX1 = GL.createBuffer();
-    GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX1);
-    GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(pohon.vertices), GL.STATIC_DRAW);
-    var TUBE_COLORS1 = GL.createBuffer();
-    GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_COLORS1);
-    GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(pohon.colors), GL.STATIC_DRAW);
-    var TUBE_FACES1 = GL.createBuffer();
-    GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES1);
-    GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(pohon.faces), GL.STATIC_DRAW);
 
-    //Pohon 
-    var log = generatePohon(0, 0, -5, 1, 100, 1, 1, 2); // badan: x, y, z, radius, segments, ScaleX, ScaleY, ScaleZ
-    var TUBE_VERTEX2 = GL.createBuffer();
-    GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX2);
-    GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(log.vertices), GL.STATIC_DRAW);
-    var TUBE_COLORS2 = GL.createBuffer();
-    GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_COLORS2);
-    GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(log.colors), GL.STATIC_DRAW);
-    var TUBE_FACES2 = GL.createBuffer();
-    GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES2);
-    GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(log.faces), GL.STATIC_DRAW);
+
+    //badan metaknight
+    var badanMetaknight = generateKepalaM(3.5, 0, 0.5, 1, 100, 1, 1, 1);
+    var TUBE_VERTEX12 = GL.createBuffer();
+    GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX12);
+    GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(badanMetaknight.vertices), GL.STATIC_DRAW);
+    var TUBE_COLORS12 = GL.createBuffer();
+    GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_COLORS12);
+    GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(badanMetaknight.colors), GL.STATIC_DRAW);
+    var TUBE_FACES12 = GL.createBuffer();
+    GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES12);
+    GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(badanMetaknight.faces), GL.STATIC_DRAW);
+
+    //curve2
+    // 
+    var controlPoints = [
+        [3.3, -0.4, 0.0],    // Sedikit turun ke bawah
+        [3.4, -0.2, 0.0],
+        [3.9, -0.2, 0.0],
+        [4, -0.4, 0.0]      // Sedikit turun ke bawah
+    ];
+
+    var segments = 1000;
+    var Zoffset = 1.49;
+    var thickness = 0.01;
+
+    // Memanggil generateCurve2 dengan parameter-parameter yang sesuai
+    var curve2 = generateCurve2(controlPoints, segments, Zoffset, thickness);
+    var TUBE_VERTEX37 = GL.createBuffer();
+    GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX37);
+    GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(curve2.vertices), GL.STATIC_DRAW);
+    var TUBE_COLORS37 = GL.createBuffer();
+    GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_COLORS37);
+    GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(curve2.colors), GL.STATIC_DRAW);
+    var TUBE_FACES37 = GL.createBuffer();
+    GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES37);
+    GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(curve2.faces), GL.STATIC_DRAW);
+
+
 
     //matrix
     var PROJECTION_MATRIX = LIBS.get_projection(40, CANVAS.width / CANVAS.height, 1, 100);
@@ -330,28 +326,28 @@ function main() {
             LIBS.translateX(VIEW_MATRIX, cameraSpeed);
         }
 
-        //Pohon
-        GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX1);
+        // BadanMetaknight
+        GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX12);
         GL.vertexAttribPointer(_position, 3, GL.FLOAT, false, 0, 0);
-        GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_COLORS1);
+        GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_COLORS12);
         GL.vertexAttribPointer(_color, 3, GL.FLOAT, false, 0, 0);
-        GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES1);
+        GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES12);
         GL.uniformMatrix4fv(_PMatrix, false, PROJECTION_MATRIX);
         GL.uniformMatrix4fv(_VMatrix, false, VIEW_MATRIX);
-        GL.uniformMatrix4fv(_MMatrix, false, MODEL_MATRIX2);
-        GL.drawElements(GL.TRIANGLES, pohon.faces.length, GL.UNSIGNED_SHORT, 0);
+        GL.uniformMatrix4fv(_MMatrix, false, MODEL_MATRIX);
+        GL.drawElements(GL.TRIANGLES, badanMetaknight.faces.length, GL.UNSIGNED_SHORT, 0);
 
-        
-        //Log
-        GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX2);
+        //curve2
+        GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX37);
         GL.vertexAttribPointer(_position, 3, GL.FLOAT, false, 0, 0);
-        GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_COLORS2);
+        GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_COLORS37);
         GL.vertexAttribPointer(_color, 3, GL.FLOAT, false, 0, 0);
-        GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES);
-        GL.uniformMatrix4fv(_PMatrix, false, PROJECTION_MATRI2X);
+        GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES37);
+        GL.uniformMatrix4fv(_PMatrix, false, PROJECTION_MATRIX);
         GL.uniformMatrix4fv(_VMatrix, false, VIEW_MATRIX);
         GL.uniformMatrix4fv(_MMatrix, false, MODEL_MATRIX);
-        GL.drawElements(GL.TRIANGLES, log.faces.length, GL.UNSIGNED_SHORT, 0);
+        GL.drawElements(GL.TRIANGLES, curve2.faces.length, GL.UNSIGNED_SHORT, 0);
+
 
 
 
