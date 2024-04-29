@@ -1504,6 +1504,12 @@ function main() {
         return false;
     }
 
+    //scalling awan
+    var FRICTION = 0.95;
+    var ScaleAwan = 0.5;
+    var AwanS = true;
+
+
     //shaders
     var shader_vertex_source = `
     attribute vec3 position;
@@ -1891,7 +1897,7 @@ function main() {
 
 
     //matahari
-    var matahari = generateSphere2(20, 35, -50, 2, 100);
+    var matahari = generateSphere2(20, 20, -50, 2, 100);
     var TUBE_VERTEX35 = GL.createBuffer();
     GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX35);
     GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(matahari.vertices), GL.STATIC_DRAW);
@@ -2006,6 +2012,7 @@ function main() {
     var MODEL_MATRIX2 = LIBS.get_I4();
     var MODEL_MATRIX3 = LIBS.get_I4();
     var MODEL_MATRIX4 = LIBS.get_I4();
+    var MODEL_MATRIXawan = LIBS.get_I4();
 
     // Event listener untuk mouse movement
     document.addEventListener('mousemove', function (event) {
@@ -2134,7 +2141,7 @@ function main() {
         } else {
             kaki_z += 0.025;
             gerakBadan = 0.025;
-            stepLength = 0.1 * Math.sin(walkingPhase * 2 * Math.PI)*2;
+            stepLength = 0.1 * Math.sin(walkingPhase * 2 * Math.PI) * 2;
         }
 
         let kaki_kiri_MODEL_MATRIX = LIBS.get_I4();
@@ -2162,6 +2169,23 @@ function main() {
 
         LIBS.translateZ(kaki_kiri_M_MODEL_MATRIX, kaki_z);
         LIBS.translateZ(kaki_kanan_M_MODEL_MATRIX, kaki_z);
+
+
+        //Scalling
+        if (AwanS == true) {
+            ScaleAwan += 0.005;
+            if (ScaleAwan >= 1.5) {
+                AwanS = false;
+            }
+        } else {
+            ScaleAwan -= 0.005;
+            if (ScaleAwan <= 0.5) {
+                AwanS = true;
+            }
+        }
+
+        LIBS.scale(MODEL_MATRIXawan, 3 + ScaleAwan, 3 +ScaleAwan, 3 + ScaleAwan);
+
 
         // Badan
         GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX1);
@@ -2496,7 +2520,6 @@ function main() {
         GL.uniformMatrix4fv(_MMatrix, false, MODEL_MATRIX);
         GL.drawElements(GL.TRIANGLES, curve2.faces.length, GL.UNSIGNED_SHORT, 0);
 
-
         //awan
         GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX38);
         GL.vertexAttribPointer(_position, 3, GL.FLOAT, false, 0, 0);
@@ -2505,7 +2528,7 @@ function main() {
         GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES38);
         GL.uniformMatrix4fv(_PMatrix, false, PROJECTION_MATRIX);
         GL.uniformMatrix4fv(_VMatrix, false, VIEW_MATRIX);
-        GL.uniformMatrix4fv(_MMatrix, false, MODEL_MATRIX4);
+        GL.uniformMatrix4fv(_MMatrix, false, MODEL_MATRIXawan);
         GL.drawElements(GL.TRIANGLES, awan.faces.length, GL.UNSIGNED_SHORT, 0);
 
         GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX39);
@@ -2515,7 +2538,7 @@ function main() {
         GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES39);
         GL.uniformMatrix4fv(_PMatrix, false, PROJECTION_MATRIX);
         GL.uniformMatrix4fv(_VMatrix, false, VIEW_MATRIX);
-        GL.uniformMatrix4fv(_MMatrix, false, MODEL_MATRIX4);
+        GL.uniformMatrix4fv(_MMatrix, false, MODEL_MATRIXawan);
         GL.drawElements(GL.TRIANGLES, awan2.faces.length, GL.UNSIGNED_SHORT, 0);
 
         GL.bindBuffer(GL.ARRAY_BUFFER, TUBE_VERTEX40);
@@ -2525,7 +2548,7 @@ function main() {
         GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES40);
         GL.uniformMatrix4fv(_PMatrix, false, PROJECTION_MATRIX);
         GL.uniformMatrix4fv(_VMatrix, false, VIEW_MATRIX);
-        GL.uniformMatrix4fv(_MMatrix, false, MODEL_MATRIX4);
+        GL.uniformMatrix4fv(_MMatrix, false, MODEL_MATRIXawan);
         GL.drawElements(GL.TRIANGLES, awan3.faces.length, GL.UNSIGNED_SHORT, 0);
 
 
@@ -2536,7 +2559,7 @@ function main() {
         GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, TUBE_FACES41);
         GL.uniformMatrix4fv(_PMatrix, false, PROJECTION_MATRIX);
         GL.uniformMatrix4fv(_VMatrix, false, VIEW_MATRIX);
-        GL.uniformMatrix4fv(_MMatrix, false, MODEL_MATRIX4);
+        GL.uniformMatrix4fv(_MMatrix, false, MODEL_MATRIXawan);
         GL.drawElements(GL.TRIANGLES, awan4.faces.length, GL.UNSIGNED_SHORT, 0);
 
 
